@@ -4,6 +4,7 @@ import { InputField } from './components/InputField';
 import { ResultCard } from './components/ResultCard';
 import { type CalculationResults, type TripRecord } from './types';
 import { MaterialIcon } from './components/MaterialIcon';
+import { ThemeSwitcher } from './components/ThemeSwitcher';
 import Snackbar from './components/Snackbar';
 import { HistoryModal } from './components/HistoryModal';
 
@@ -201,14 +202,17 @@ const App: React.FC = () => {
                         <h1 className="text-4xl font-light tracking-tight text-on-surface">GigCalc</h1>
                         <p className="text-on-surface-variant text-sm mt-1 uppercase tracking-widest font-bold opacity-60">Optimizer</p>
                     </div>
-                    <button
-                        onClick={() => setIsHistoryOpen(true)}
-                        aria-label="Open history"
-                        className="w-14 h-14 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-primary/20 hover:text-primary transition-all duration-300 flex items-center justify-center relative shadow-sm"
-                    >
-                        <MaterialIcon icon="history" className="text-on-surface-variant" ariaLabel="History" />
-                        {history.length > 0 && <span className="absolute top-3 right-3 h-3 w-3 rounded-full bg-error border-2 border-background"></span>}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <ThemeSwitcher />
+                      <button
+                         onClick={() => setIsHistoryOpen(true)}
+                         aria-label="Open history"
+                         className="w-14 h-14 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-primary-20 hover:text-primary transition-all duration-300 flex items-center justify-center relative shadow-sm"
+                     >
+                         <MaterialIcon icon="history" className="text-on-surface-variant" ariaLabel="History" />
+                         {history.length > 0 && <span className="absolute top-3 right-3 h-3 w-3 rounded-full bg-error-10 border-2 border-background"></span>}
+                      </button>
+                    </div>
                 </header>
 
                 {/* Recent Activity Feed */}
@@ -230,7 +234,7 @@ const App: React.FC = () => {
                             history.slice(0, 10).map((trip) => (
                                 <div
                                     key={trip.id}
-                                    className="min-w-[160px] snap-start bg-surface-container-high/60 border border-outline-variant/20 rounded-2xl p-4 flex flex-col justify-between hover:bg-surface-container-highest transition-colors"
+                                    className="min-w-[160px] snap-start bg-surface-container-high-50 border border-outline-variant-20 rounded-2xl p-4 flex flex-col justify-between hover:bg-surface-container-highest transition-colors"
                                 >
                                     <div className="flex justify-between items-start">
                     <span className="text-[10px] font-medium text-on-surface-variant">
@@ -258,13 +262,13 @@ const App: React.FC = () => {
                 </section>
 
                 {gpsError && (
-                    <div className="bg-error/10 border border-error/20 text-error px-4 py-3 rounded-2xl text-sm flex items-center animate-shake">
+                    <div className="bg-error-10 border border-error-20 text-error px-4 py-3 rounded-2xl text-sm flex items-center animate-shake">
                         <span className="mr-3 text-lg">⚠️</span> {gpsError}
                     </div>
                 )}
 
                 {/* Financials and Distance Card */}
-                <div className="bg-surface-container rounded-[32px] p-8 border border-outline-variant/20 shadow-sm space-y-8">
+                <div className="bg-surface-container rounded-[32px] p-8 border border-outline-variant-20 shadow-sm space-y-8">
                     <h2 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant/70">Trip Economics</h2>
 
                     <div className="grid gap-6">
@@ -274,7 +278,7 @@ const App: React.FC = () => {
                             <div className="flex-grow">
                                 <InputField id="distance" label="Trip Distance" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="0.0" unit="MI" icon={<MaterialIcon icon="straighten" ariaLabel="Distance in miles" className="text-[18px]" />} />
                             </div>
-                            <button onClick={toggleTracking} className={`w-20 h-14 mt-6 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 ${isTracking ? 'bg-error/20 border-error/50 text-error shadow-inner' : 'bg-surface-container-highest/50 border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary'}`}>
+                            <button onClick={toggleTracking} className={`w-20 h-14 mt-6 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 ${isTracking ? 'bg-error-10 border-error-20 text-error shadow-inner' : 'bg-surface-container-highest-40 border-outline-variant-20 text-on-surface-variant hover:border-primary/50 hover:text-primary'}`}>
                                 {isTracking ? <MaterialIcon icon="stop" ariaLabel="Stop tracking" className="text-[18px]" /> : <MaterialIcon icon="play_arrow" ariaLabel="Start tracking" className="text-[18px]" />}
                                 <span className="text-[9px] font-bold uppercase">{isTracking ? 'STOP' : 'LIVE'}</span>
                             </button>
@@ -299,7 +303,7 @@ const App: React.FC = () => {
                 {/* AI Analysis Section */}
                 <div className="relative group">
                     <div className={`absolute -inset-0.5 bg-gradient-to-r from-primary via-tertiary to-primary rounded-[34px] opacity-20 blur group-hover:opacity-40 transition duration-1000 group-hover:duration-200 ${isAnalyzing ? 'animate-pulse' : ''}`}></div>
-                    <div className="relative bg-surface-container-high rounded-[32px] p-6 border border-primary/10 shadow-xl overflow-hidden">
+                    <div className="relative bg-surface-container-high rounded-[32px] p-6 border border-primary-10 shadow-xl overflow-hidden">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                                 <MaterialIcon icon="sparkles" className="text-primary" ariaLabel="Sparkles" />
@@ -309,7 +313,7 @@ const App: React.FC = () => {
                                 <button
                                     onClick={analyzeProfitability}
                                     disabled={!payment || !distance}
-                                    className="text-[10px] font-bold uppercase tracking-widest bg-primary/20 text-primary px-3 py-1.5 rounded-full hover:bg-primary/30 transition-all disabled:opacity-20"
+                                    className="text-[10px] font-bold uppercase tracking-widest bg-primary-20 text-primary px-3 py-1.5 rounded-full hover:bg-primary-30 transition-all disabled:opacity-20"
                                 >
                                     Analyze
                                 </button>
@@ -318,8 +322,8 @@ const App: React.FC = () => {
 
                         {isAnalyzing ? (
                             <div className="py-4 space-y-3">
-                                <div className="h-4 bg-primary/10 rounded-full w-2/3 animate-pulse"></div>
-                                <div className="h-3 bg-on-surface-variant/5 rounded-full w-full animate-pulse"></div>
+                                <div className="h-4 bg-primary-10 rounded-full w-2/3 animate-pulse"></div>
+                                <div className="h-3 bg-on-surface-5 rounded-full w-full animate-pulse"></div>
                             </div>
                         ) : aiAnalysis ? (
                             <div className="animate-fade-in">
@@ -346,7 +350,7 @@ const App: React.FC = () => {
                     <button onClick={handleSaveTrip} disabled={!payment || !distance} className="flex-1 h-14 bg-on-surface text-background rounded-[20px] font-bold text-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-20 disabled:grayscale shadow-xl">
                         Save Trip Record
                     </button>
-                    <button onClick={exportTripData} disabled={history.length === 0} className="flex-1 h-14 bg-surface-container-high text-on-surface font-bold rounded-[20px] hover:brightness-105 transition-all disabled:opacity-30 border border-outline-variant/20">
+                    <button onClick={exportTripData} disabled={history.length === 0} className="flex-1 h-14 bg-surface-container-high text-on-surface font-bold rounded-[20px] hover:brightness-105 transition-all disabled:opacity-30 border border-outline-variant-20">
                         Export Trip Data
                     </button>
                 </div>

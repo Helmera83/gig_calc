@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface ResultCardProps {
@@ -35,7 +34,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
         flex flex-col justify-between 
         h-full 
         border ${borderColorClass}
-        transition-all hover:bg-surface-container-highest/80 duration-300
+        transition-all hover:bg-surface-container-highest-80 duration-300
         ${large ? 'min-h-[160px] shadow-lg' : 'min-h-[130px]'}
     `}>
       <div className="flex flex-col">
@@ -44,7 +43,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
             {value}
         </p>
       </div>
-      <p className="text-[11px] font-medium text-outline-variant mt-3 bg-on-surface/5 w-fit px-2 py-0.5 rounded-full">{description}</p>
+      <p className="text-[11px] font-medium text-outline-variant mt-3 bg-on-surface-5 w-fit px-2 py-0.5 rounded-full">{description}</p>
     </div>
   );
 };

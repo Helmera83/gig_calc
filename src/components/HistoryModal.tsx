@@ -116,7 +116,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                         <div className="space-y-6">
                             {/* Summary Dashboard Inside Modal */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-primary/10 rounded-3xl p-4 border border-primary/10">
+                                <div className="bg-primary-10 rounded-3xl p-4 border border-primary/10">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70 flex items-center gap-1.5 mb-1">
                                         <MaterialIcon icon="attach_money" ariaLabel="Aggregate net" className="text-[14px] mr-1" /> Aggregate Net
                                     </span>
@@ -124,7 +124,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                                         {formatCurrency(stats.net)}
                                     </span>
                                 </div>
-                                <div className="bg-surface-container-highest/40 rounded-3xl p-4 border border-outline-variant/10">
+                                <div className="bg-surface-container-highest-40 rounded-3xl p-4 border border-outline-variant-10">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70 flex items-center gap-1.5 mb-1">
                                         <MaterialIcon icon="location_on" ariaLabel="Total mileage" className="text-[14px] mr-1" /> Total Mileage
                                     </span>
@@ -149,7 +149,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                     {sortedHistory.length > 0 ? (
                         <div className="grid gap-3">
                             {sortedHistory.map((trip) => (
-                                <div key={trip.id} className="group relative bg-surface-container-highest/30 rounded-[24px] p-5 flex flex-col border border-outline-variant/10 hover:border-primary/30 hover:bg-surface-container-highest/60 transition-all duration-300">
+                                <div key={trip.id} className="group relative bg-surface-container-highest-30 rounded-[24px] p-5 flex flex-col border border-outline-variant-10 hover:border-primary/30 hover:bg-surface-container-highest-60 transition-all duration-300">
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">
@@ -185,7 +185,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                                     <div className="mt-3 flex items-center gap-2">
                                         <div className="h-1 flex-grow bg-outline-variant/10 rounded-full overflow-hidden">
                                             <div 
-                                                className="h-full bg-primary/40" 
+                                                className="h-full bg-primary-40"
                                                 style={{ width: `${Math.min(100, (trip.results.netEarnings / (parseFloat(trip.inputs.payment) || 1)) * 100)}%` }}
                                             />
                                         </div>
@@ -209,17 +209,17 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
 
                 {/* Footer */}
                 {history.length > 0 && (
-                    <footer className="p-8 pt-4 shrink-0 flex flex-col sm:flex-row gap-3 bg-surface-container-high/50 backdrop-blur-xl border-t border-outline-variant/10">
-                         <button 
+                    <footer className="p-8 pt-4 shrink-0 flex flex-col sm:flex-row gap-3 bg-surface-container-high-50 backdrop-blur-xl border-t border-outline-variant-10">
+                         <button
                             onClick={onExport}
-                            className="flex-grow flex items-center justify-center gap-3 h-14 rounded-2xl bg-surface-container-highest text-on-surface font-bold text-sm hover:brightness-110 transition-all border border-outline-variant/20 active:scale-95"
+                            className="flex-grow flex items-center justify-center gap-3 h-14 rounded-2xl bg-surface-container-highest text-on-surface font-bold text-sm hover:brightness-110 transition-all border border-outline-variant-20 active:scale-95"
                         >
                             <MaterialIcon icon="download" ariaLabel="Download CSV" className="text-[16px]" />
                             Download CSV
                         </button>
                         <button 
                             onClick={onClear}
-                            className="flex-grow flex items-center justify-center gap-3 h-14 rounded-2xl bg-error/10 text-error hover:bg-error/20 transition-all font-bold text-sm active:scale-95"
+                            className="flex-grow flex items-center justify-center gap-3 h-14 rounded-2xl bg-error-10 text-error hover:bg-error/20 transition-all font-bold text-sm active:scale-95"
                         >
                             <MaterialIcon icon="delete" ariaLabel="Wipe history" className="text-[16px]" />
                             Wipe History
@@ -241,7 +241,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                   background: transparent;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                  background-color: rgba(255, 255, 255, 0.05);
+                  background-color: rgba(var(--md-sys-on-surface-rgb), 0.05);
                   border-radius: 20px;
                 }
                 .scrollbar-none::-webkit-scrollbar {
