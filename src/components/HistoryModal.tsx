@@ -1,12 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { type TripRecord } from '../types';
-import { CloseIcon } from './icons/CloseIcon';
-import { ExportIcon } from './icons/ExportIcon';
-import { TrashIcon } from './icons/TrashIcon';
-import { RoadIcon } from './icons/RoadIcon';
-import { DollarIcon } from './icons/DollarIcon';
-// Fix: Import missing HistoryIcon component
-import { HistoryIcon } from './icons/HistoryIcon';
+import { MaterialIcon } from './MaterialIcon';
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -114,7 +108,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                             onClick={onClose} 
                             className="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container-highest/50 hover:bg-surface-container-highest text-on-surface-variant transition-all active:scale-90"
                         >
-                            <CloseIcon />
+                            <MaterialIcon icon="close" ariaLabel="Close history" className="text-[18px]" />
                         </button>
                     </div>
 
@@ -124,7 +118,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-primary/10 rounded-3xl p-4 border border-primary/10">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70 flex items-center gap-1.5 mb-1">
-                                        <DollarIcon /> Aggregate Net
+                                        <MaterialIcon icon="attach_money" ariaLabel="Aggregate net" className="text-[14px] mr-1" /> Aggregate Net
                                     </span>
                                     <span className={`text-2xl font-medium ${stats.net >= 0 ? 'text-primary' : 'text-error'}`}>
                                         {formatCurrency(stats.net)}
@@ -132,7 +126,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                                 </div>
                                 <div className="bg-surface-container-highest/40 rounded-3xl p-4 border border-outline-variant/10">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70 flex items-center gap-1.5 mb-1">
-                                        <RoadIcon /> Total Mileage
+                                        <MaterialIcon icon="location_on" ariaLabel="Total mileage" className="text-[14px] mr-1" /> Total Mileage
                                     </span>
                                     <span className="text-2xl font-medium text-on-surface">
                                         {stats.miles.toFixed(1)} <small className="text-xs uppercase opacity-40">mi</small>
@@ -205,7 +199,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                     ) : (
                         <div className="flex flex-col items-center justify-center py-20 text-on-surface-variant text-center">
                             <div className="w-20 h-20 bg-surface-container-highest rounded-full flex items-center justify-center mb-6 opacity-40">
-                                <HistoryIcon />
+                                <MaterialIcon icon="history" ariaLabel="History" className="text-[28px]" />
                             </div>
                             <h3 className="text-xl font-medium text-on-surface mb-2">No Records Found</h3>
                             <p className="text-sm text-on-surface-variant/60 max-w-xs">Start recording your delivery trips to see your earnings performance history here.</p>
@@ -220,20 +214,20 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                             onClick={onExport}
                             className="flex-grow flex items-center justify-center gap-3 h-14 rounded-2xl bg-surface-container-highest text-on-surface font-bold text-sm hover:brightness-110 transition-all border border-outline-variant/20 active:scale-95"
                         >
-                            <ExportIcon />
+                            <MaterialIcon icon="download" ariaLabel="Download CSV" className="text-[16px]" />
                             Download CSV
                         </button>
                         <button 
                             onClick={onClear}
                             className="flex-grow flex items-center justify-center gap-3 h-14 rounded-2xl bg-error/10 text-error hover:bg-error/20 transition-all font-bold text-sm active:scale-95"
                         >
-                            <TrashIcon />
+                            <MaterialIcon icon="delete" ariaLabel="Wipe history" className="text-[16px]" />
                             Wipe History
                         </button>
-                    </footer>
-                )}
-            </div>
-             <style>{`
+                     </footer>
+                 )}
+             </div>
+              <style>{`
                 @keyframes fadeInUp {
                   from { opacity: 0; transform: translateY(40px) scale(0.98); }
                   to { opacity: 1; transform: translateY(0) scale(1); }

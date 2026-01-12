@@ -24,13 +24,4 @@ export interface GroundingLink {
   uri: string;
 }
 
-// Augment the global Window to expose optional aistudio helper without using `any` casts
-declare global {
-  interface Window {
-    aistudio?: {
-      openSelectKey?: () => Promise<void> | void;
-    };
-  }
-}
-
 export {};

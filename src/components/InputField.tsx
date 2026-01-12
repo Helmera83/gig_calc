@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface InputFieldProps {
@@ -9,9 +8,13 @@ interface InputFieldProps {
   placeholder: string;
   unit: string;
   icon: React.ReactNode;
+  inputRef?: React.Ref<HTMLInputElement>;
+  type?: string;
+  min?: string;
+  step?: string;
 }
 
-export const InputField: React.FC<InputFieldProps> = ({ id, label, value, onChange, placeholder, unit, icon }) => {
+export const InputField: React.FC<InputFieldProps> = ({ id, label, value, onChange, placeholder, unit, icon, inputRef, type = 'number', min = '0', step = '0.01' }) => {
   return (
     <div className="group relative flex flex-col gap-1.5">
       <label 
@@ -35,15 +38,16 @@ export const InputField: React.FC<InputFieldProps> = ({ id, label, value, onChan
         </div>
         
         <input
-            type="number"
+            type={type}
             id={id}
             name={id}
             value={value}
             onChange={onChange}
             placeholder={placeholder}
+            ref={inputRef}
             className="flex-grow bg-transparent text-on-surface placeholder-on-surface-variant/30 focus:outline-none text-base h-full"
-            min="0"
-            step="0.01"
+            min={min}
+            step={step}
         />
         
         <div className="ml-2 pl-3 border-l border-outline-variant/20">
