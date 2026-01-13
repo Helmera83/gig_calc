@@ -1,0 +1,47 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                 GIGCALC PLAYWRIGHT QUICK START                   ║
+╚══════════════════════════════════════════════════════════════════╝
+
+📋 PREREQUISITES:
+   1. Start dev server:        npm run dev
+   2. Install browsers:        npx playwright install
+
+🚀 RUN TESTS:
+
+   Recommended (UI Mode):      npx playwright test --ui
+   Command Line:               npm run test:e2e
+   Specific File:              npx playwright test tests/e2e.spec.ts
+   Watch Browser:              npx playwright test --headed
+   Debug:                      npx playwright test --debug
+
+✅ TEST COVERAGE:
+   • Save & Export (with CSV intercept)
+   • Calculator Accuracy
+   • GPS Button
+   • History Modal
+   • Recent Activity Feed
+   • Export Button State
+   • Input Validation
+   • Theme Switcher Cycling
+   • Theme Persistence
+
+📊 EXPECTED RESULT:
+   9 passed (15s)
+
+🐛 TROUBLESHOOTING:
+   • Connection refused?         → Start dev server
+   • Timeout errors?             → Run with --headed to debug
+   • Browser not found?          → npx playwright install
+   • PowerShell blocked?         → Run as: Set-ExecutionPolicy Bypass
+
+📚 DOCUMENTATION:
+   • Full details:  PLAYWRIGHT_TESTS.md
+   • Summary:       PLAYWRIGHT_SUMMARY.md
+   • Config:        playwright.config.ts
+
+🎯 QUICK TEST:
+   Terminal 1:  npm run dev
+   Terminal 2:  npx playwright test --ui
+
+   Click ▶️ on any test to run it visually!
+
