@@ -1,4 +1,14 @@
 :root {
+  /* Emphasized Typography Tokens */
+  --md-sys-typescale-display-large-font: 'Roboto', system-ui;
+  --md-sys-typescale-display-large-weight: 700; /* Bold for emphasis */
+  --md-sys-typescale-display-large-size: 57px;
+  --md-sys-typescale-display-large-tracking: -0.25px;
+
+  --md-sys-typescale-label-medium-weight: 500;
+  --md-sys-typescale-label-medium-size: 12px;
+  --md-sys-typescale-label-medium-tracking: 0.5px; /* Better for all-caps metadata */
+
   /* Material 3 Expressive Dark Theme tokens (approximate values) */
   --md-sys-color-primary: #8B52E2;
   --md-sys-color-on-primary: #FFFFFF; /* high contrast on primary */
@@ -19,8 +29,7 @@
   --md-sys-color-on-error: #601410;
 
   /* Background / surfaces - very dark gray */
-  --md-sys-color-background: #070708; /* near-black */
-  --md-sys-color-surface: #0E0E10; /* dark gray */
+  --md-sys-color-background: #0E0E10; /* dark gray */
   --md-sys-color-surface-container: #141315;
   --md-sys-color-surface-container-high: #1B1A1D;
   --md-sys-color-surface-container-highest: #232226;
@@ -33,6 +42,11 @@
   --md-sys-tertiary-rgb: 239,184,200;
   --md-sys-error-rgb: 242,184,181;
   --md-sys-background-rgb: 7,7,8;
+  /* Success / Warning tokens */
+  --md-sys-color-success: #4CAF50; /* green */
+  --md-sys-success-rgb: 76,175,80;
+  --md-sys-color-warning: #F6C84C; /* amber */
+  --md-sys-warning-rgb: 246,200,76;
   --md-sys-surface-rgb: 14,14,16;
   --md-sys-surface-container-rgb: 20,19,21;
   --md-sys-on-primary-rgb: 255,255,255;
@@ -48,6 +62,8 @@
   --md-sys-elevation-level-1: linear-gradient(180deg, rgba(var(--md-sys-primary-rgb),0.12), rgba(0,0,0,0.65));
   --md-sys-surface-tint: rgba(var(--md-sys-primary-rgb),0.10);
 
+  /* motion tokens defined below (canonical values) */
+
   font-family: Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -55,6 +71,11 @@
   color-scheme: dark;
   color: var(--md-sys-color-on-surface);
   background-color: var(--md-sys-color-background);
+  /* M3 Expressive Spring Easing (Overshoots slightly) */
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --md-sys-motion-duration-long: 500ms;
+  --md-sys-motion-duration: 250ms; /* canonical motion duration variable */
+
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -62,14 +83,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Link styles */
-a {
-  font-weight: 500;
-  color: var(--md-sys-color-primary);
-  text-decoration: none;
+/* Base transition for all interactive elements */
+button, input, .transaction-item, .result-card-container {
+  transition: all var(--md-sys-motion-duration) var(--md-sys-motion-easing-emphasized);
 }
-a:hover { color: var(--md-sys-color-primary-container); }
 
+/* Global Body Transition for smooth theme switching */
 body {
   margin: 0;
   display: flex;
@@ -78,7 +97,85 @@ body {
   min-height: 100vh;
   background: var(--md-sys-color-background);
   color: var(--md-sys-color-on-surface);
+  transition: background-color var(--md-sys-motion-duration-long) ease,
+  color var(--md-sys-motion-duration-long) ease;
 }
+
+/* Theme Variants: High Contrast Dark Theme */
+.theme-high-contrast {
+  --md-sys-color-primary: #A78BFA; /* brighter purple for high contrast */
+  --md-sys-color-background: #000000; /* pure black */
+  --md-sys-color-surface: #0A0A0A;
+  --md-sys-color-surface-container: #121212;
+  --md-sys-color-surface-container-high: #1E1E1E;
+  --md-sys-color-surface-container-highest: #2A2A2A;
+  --md-sys-color-on-surface: rgba(255,255,255,1.0); /* full white for contrast */
+  --md-sys-color-on-surface-variant: rgba(255,255,255,0.87);
+  --md-sys-color-outline: rgba(255,255,255,0.2); /* brighter outlines */
+  --md-sys-background-rgb: 0,0,0;
+  --md-sys-surface-rgb: 10,10,10;
+  --md-sys-on-surface-rgb: 255,255,255;
+  --md-sys-primary-rgb: 167,139,250;
+}
+
+/* Theme Variants: Light Theme */
+.theme-light {
+  --md-sys-color-primary: #6A39C8; /* darker purple for light bg */
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #E6D5FF;
+  --md-sys-color-on-primary-container: #210055;
+
+  --md-sys-color-secondary: #625B71;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #E8DEF8;
+  --md-sys-color-on-secondary-container: #1D192B;
+
+  --md-sys-color-tertiary: #7D5260;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #FFD8E4;
+  --md-sys-color-on-tertiary-container: #31111D;
+
+  --md-sys-color-error: #BA1A1A;
+  --md-sys-color-on-error: #FFFFFF;
+
+  --md-sys-color-background: #FEFBFF; /* nearly white */
+  --md-sys-color-surface: #F8F8F8;
+  --md-sys-color-surface-container: #F0F0F0;
+  --md-sys-color-surface-container-high: #E8E8E8;
+  --md-sys-color-surface-container-highest: #E0E0E0;
+  --md-sys-color-on-surface: rgba(0,0,0,0.87);
+  --md-sys-color-on-surface-variant: rgba(0,0,0,0.6);
+
+  --md-sys-color-success: #2E7D32; /* darker green for light mode */
+  --md-sys-color-warning: #F57C00; /* darker amber for light mode */
+
+  /* RGB helpers for light theme */
+  --md-sys-background-rgb: 254,251,255;
+  --md-sys-surface-rgb: 248,248,248;
+  --md-sys-on-surface-rgb: 0,0,0;
+  --md-sys-primary-rgb: 106,57,200;
+  --md-sys-secondary-rgb: 98,91,113;
+  --md-sys-tertiary-rgb: 125,82,96;
+  --md-sys-error-rgb: 186,26,26;
+  --md-sys-success-rgb: 46,125,50;
+  --md-sys-warning-rgb: 245,124,0;
+  --md-sys-outline-rgb: 70,70,70;
+  --md-sys-color-outline: rgba(var(--md-sys-outline-rgb), 0.3);
+  --md-sys-color-outline-variant: rgba(var(--md-sys-outline-rgb), 0.15);
+
+  color-scheme: light;
+}
+
+/* Link styles */
+a {
+  font-weight: 500;
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+}
+
+a:hover { color: var(--md-sys-color-primary-container); }
+
+
 
 h1 { font-size: 3.2em; line-height: 1.1; }
 
@@ -95,12 +192,37 @@ button {
   cursor: pointer;
   transition: transform 0.08s ease, box-shadow 0.12s ease, background 0.12s ease;
   box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  position: relative; /* required for ripple positioning */
+  overflow: hidden;   /* clip ripple */
 }
 button:hover { transform: translateY(-1px); }
-button:active { transform: translateY(0); }
+
 button:focus, button:focus-visible {
   outline: 3px solid rgba(var(--md-sys-primary-rgb),0.24);
   outline-offset: 2px;
+}
+button, .earnings-card {
+  /* Apply the expressive spring to transforms */
+  transition: transform var(--md-sys-motion-duration) var(--md-sys-motion-easing-emphasized),
+  box-shadow 200ms ease;
+}
+
+button:active {
+  transform: scale(0.95); /* Tactile "press" feel */
+}
+
+/* Ripple effect */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 700ms linear forwards;
+  pointer-events: none;
+  background: rgba(var(--md-sys-on-surface-rgb), 0.06);
+}
+
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
 }
 
 /* Forms / Inputs */
@@ -109,7 +231,7 @@ input, textarea {
   color: var(--md-sys-color-on-surface);
   border: 1px solid rgba(255,255,255,0.04);
   padding: 0.5rem 0.75rem;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 input:focus, textarea:focus {
   border-color: var(--md-sys-color-primary-container);
@@ -127,6 +249,33 @@ input:focus, textarea:focus {
 .text-on-surface-variant { color: var(--md-sys-color-on-surface-variant); }
 .border-outline { border-color: var(--md-sys-color-outline); }
 
+/* On-surface opacity steps for semantic text colors (use RGB helper) */
+.text-on-surface-80 { color: rgba(var(--md-sys-on-surface-rgb), 0.80); }
+.text-on-surface-70 { color: rgba(var(--md-sys-on-surface-rgb), 0.70); }
+.text-on-surface-60 { color: rgba(var(--md-sys-on-surface-rgb), 0.60); }
+.text-on-surface-50 { color: rgba(var(--md-sys-on-surface-rgb), 0.50); }
+.text-on-surface-40 { color: rgba(var(--md-sys-on-surface-rgb), 0.40); }
+.text-on-surface-30 { color: rgba(var(--md-sys-on-surface-rgb), 0.30); }
+
+/* Placeholder helper (applies when added as a class on inputs) */
+.placeholder-on-surface-30::placeholder { color: rgba(var(--md-sys-on-surface-rgb), 0.30); }
+
+/* Border outline variant helpers */
+.border-outline-variant-5 { border-color: rgba(var(--md-sys-on-surface-rgb), 0.05); }
+.border-outline-variant-10 { border-color: rgba(var(--md-sys-on-surface-rgb), 0.10); }
+.border-outline-variant-20 { border-color: rgba(var(--md-sys-on-surface-rgb), 0.20); }
+.border-outline-variant-30 { border-color: rgba(var(--md-sys-on-surface-rgb), 0.30); }
+
+/* Background overlay util for modal */
+.bg-background-80 { background-color: rgba(var(--md-sys-background-rgb), 0.80); }
+
+/* bg/surface helpers with opacity variants (already used in markup) */
+.bg-surface-container-high-50 { background: rgba(var(--md-sys-surface-container-rgb), 0.50); }
+.bg-surface-container-highest-30 { background: rgba(var(--md-sys-surface-rgb), 0.30); }
+.bg-surface-container-highest-40 { background: rgba(var(--md-sys-surface-rgb), 0.40); }
+.bg-surface-container-highest-60 { background: rgba(var(--md-sys-surface-rgb), 0.60); }
+.bg-surface-container-highest-80 { background: rgba(var(--md-sys-surface-rgb), 0.80); }
+
 /* Semantic opacity utilities (using RGB helpers) */
 .bg-primary-10 { background: rgba(var(--md-sys-primary-rgb), 0.10); }
 .bg-primary-20 { background: rgba(var(--md-sys-primary-rgb), 0.20); }
@@ -135,77 +284,47 @@ input:focus, textarea:focus {
 .text-primary-70 { color: rgba(var(--md-sys-primary-rgb), 0.70); }
 .text-primary-80 { color: rgba(var(--md-sys-primary-rgb), 0.80); }
 
-.bg-on-surface-5 { background: rgba(var(--md-sys-on-surface-rgb), 0.05); }
-.text-on-surface-50 { color: rgba(var(--md-sys-on-surface-rgb), 0.50); }
-.text-on-surface-60 { color: rgba(var(--md-sys-on-surface-rgb), 0.60); }
-.text-on-surface-40 { color: rgba(var(--md-sys-on-surface-rgb), 0.40); }
-.text-on-surface-30 { color: rgba(var(--md-sys-on-surface-rgb), 0.30); }
-.text-on-surface-70 { color: rgba(var(--md-sys-on-surface-rgb), 0.70); }
-
-.bg-error-10 { background: rgba(var(--md-sys-error-rgb), 0.10); }
-.border-error-20 { border-color: rgba(var(--md-sys-error-rgb), 0.20); }
+/* Semantic status text colors */
+.text-success { color: var(--md-sys-color-success); }
+.text-success-70 { color: rgba(var(--md-sys-success-rgb), 0.70); }
+.text-warning { color: var(--md-sys-color-warning); }
+.text-warning-70 { color: rgba(var(--md-sys-warning-rgb), 0.70); }
+/* Primary / Error semantic aliases (map to tokens) */
+.text-primary { color: var(--md-sys-color-primary); }
+.text-error { color: var(--md-sys-color-error); }
 .text-error-70 { color: rgba(var(--md-sys-error-rgb), 0.70); }
 
-.bg-surface-container-high-50 { background: rgba(var(--md-sys-surface-container-rgb), 0.50); }
-.bg-surface-container-highest-40 { background: rgba(var(--md-sys-surface-rgb), 0.40); }
-.bg-surface-container-highest-30 { background: rgba(var(--md-sys-surface-rgb), 0.30); }
-.bg-surface-container-highest-60 { background: rgba(var(--md-sys-surface-rgb), 0.60); }
-.bg-surface-container-highest-80 { background: rgba(var(--md-sys-surface-rgb), 0.80); }
+/* Material 3 overshoot (spring) motion for expressive UI */
+@keyframes spring-overshoot {
+  0% { transform: scale(0.96); opacity: 0; }
+  60% { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.animate-spring-up { animation: spring-overshoot 420ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards; }
 
-.border-outline-variant-10 { border-color: rgba(var(--md-sys-on-surface-rgb), 0.10); }
-.border-outline-variant-20 { border-color: rgba(var(--md-sys-on-surface-rgb), 0.20); }
-
-/* Prefer outlines to use neutral grey - helpers for outline-based borders */
-.border-outline-10 { border-color: rgba(var(--md-sys-outline-rgb), 0.10); }
-.border-outline-20 { border-color: rgba(var(--md-sys-outline-rgb), 0.20); }
-
-/* Surface tint utility */
-.surface-tint { background-image: var(--md-sys-elevation-level-1); }
-
-/* Theme override: high-contrast mode */
-.theme-high-contrast {
-  --md-sys-color-on-surface: rgba(255,255,255,0.98);
-  --md-sys-color-on-surface-variant: rgba(255,255,255,0.85);
-  --md-sys-outline-rgb: 200,200,210; /* brighter outline */
-  --md-sys-color-outline: rgba(var(--md-sys-outline-rgb), 0.20);
-  --md-sys-elevation-level-1: linear-gradient(180deg, rgba(var(--md-sys-primary-rgb),0.18), rgba(0,0,0,0.8));
-  --md-sys-surface-tint: rgba(var(--md-sys-primary-rgb),0.16);
+/* Transaction item collapsed / expanded states */
+.transaction-item {
+  height: 72px;
+  border-radius: 12px; /* Small corner */
+  transition: all var(--md-sys-motion-duration) var(--md-sys-motion-easing-emphasized);
+  overflow: hidden;
 }
 
-/* Theme override: light mode */
-.theme-light {
-  /* Backgrounds */
-  --md-sys-color-background: #F6F7FB; /* very light gray */
-  --md-sys-color-surface: #FFFFFF;
-  --md-sys-color-surface-container: #F3F4F6;
-  --md-sys-color-surface-container-high: #EEF2FF;
-  --md-sys-color-surface-container-highest: #EDF2FF;
-
-  /* Text */
-  --md-sys-color-on-surface: rgba(17,24,39,0.95); /* dark text */
-  --md-sys-color-on-surface-variant: rgba(17,24,39,0.65);
-  --md-sys-on-surface-rgb: 17,24,39;
-
-  /* Primary stays purple but ensure readable on light */
-  --md-sys-color-primary: #8B52E2;
-  --md-sys-color-on-primary: #FFFFFF;
-  --md-sys-color-primary-container: #EDE2FF;
-  --md-sys-color-on-primary-container: #240046;
-  --md-sys-primary-rgb: 139,82,226;
-
-  /* Outline color becomes subtle mid-gray */
-  --md-sys-outline-rgb: 148,151,160;
-  --md-sys-color-outline: rgba(var(--md-sys-outline-rgb), 0.14);
-  --md-sys-color-outline-variant: rgba(var(--md-sys-outline-rgb), 0.08);
-
-  /* Elevation tint more subtle in light mode */
-  --md-sys-elevation-level-1: linear-gradient(180deg, rgba(var(--md-sys-primary-rgb),0.06), rgba(0,0,0,0.04));
-  --md-sys-surface-tint: rgba(var(--md-sys-primary-rgb),0.04);
+.transaction-item.expanded {
+  height: 300px;
+  border-radius: 28px; /* M3 Extra Large corner */
+  background-color: var(--md-sys-color-surface-container-highest);
+  z-index: 10;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.6);
 }
 
-/* Fallback for light users */
-@media (prefers-color-scheme: light) {
-  :root { color-scheme: light; }
+/* Smoothly animate child contents (fade/slide) */
+.transaction-item .expanded-content {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 260ms var(--md-sys-motion-easing-emphasized), transform 260ms var(--md-sys-motion-easing-emphasized);
 }
-
-/* End of custom M3 expressive theme */
+.transaction-item.expanded .expanded-content {
+  opacity: 1;
+  transform: translateY(0);
+}

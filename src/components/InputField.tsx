@@ -19,21 +19,21 @@ export const InputField: React.FC<InputFieldProps> = ({ id, label, value, onChan
     <div className="group relative flex flex-col gap-1.5">
       <label 
           htmlFor={id} 
-          className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/60 ml-1"
+          className="text-[11px] font-bold uppercase tracking-wider text-on-surface-60 ml-1"
       >
           {label}
       </label>
       <div className="
-        flex items-center 
-        bg-surface-container-highest/50 
-        rounded-2xl
-        border border-outline-variant/30
-        group-focus-within:border-primary/50 group-focus-within:bg-surface-container-highest
-        group-focus-within:ring-4 group-focus-within:ring-primary/10
-        transition-all duration-200
-        h-14 px-4
-      ">
-        <div className="text-on-surface-variant/70 mr-3 group-focus-within:text-primary transition-colors">
+  flex items-center
+  bg-surface-container-highest-30
+  rounded-2xl
+  border border-outline-variant-20
+  group-focus-within:border-primary
+  group-focus-within:bg-surface-container-highest
+  transition-all duration-300
+  h-14 px-4
+">
+        <div className="text-on-surface-70 mr-3 group-focus-within:text-primary transition-colors">
             {icon}
         </div>
         
@@ -45,13 +45,13 @@ export const InputField: React.FC<InputFieldProps> = ({ id, label, value, onChan
             onChange={onChange}
             placeholder={placeholder}
             ref={inputRef}
-            className="flex-grow bg-transparent text-on-surface placeholder-on-surface-variant/30 focus:outline-none text-base h-full"
+            className="flex-grow bg-transparent text-on-surface placeholder-on-surface-30 focus:outline-none text-base h-full"
             min={min}
             step={step}
         />
         
-        <div className="ml-2 pl-3 border-l border-outline-variant/20">
-          <span className="text-xs text-on-surface-variant/80 font-medium">{unit}</span>
+        <div className="ml-2 pl-3 border-l border-outline-variant-20">
+          <span className="text-xs text-on-surface-70 font-medium">{unit}</span>
         </div>
       </div>
     </div>

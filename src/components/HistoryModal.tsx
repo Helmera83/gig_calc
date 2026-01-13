@@ -27,7 +27,7 @@ const SortBadge: React.FC<{
       className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border
           ${isActive
             ? 'bg-primary text-on-primary border-transparent shadow-md shadow-primary/20'
-            : 'bg-surface-container-highest/30 text-on-surface-variant border-outline-variant/30 hover:bg-surface-container-highest/60'
+            : 'bg-surface-container-highest-30 text-on-surface-variant border-outline-variant-30 hover:bg-surface-container-highest-60'
           }`}
     >
       {label}
@@ -43,6 +43,48 @@ const SortBadge: React.FC<{
 export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, history, onClear, onExport }) => {
     const [sortField, setSortField] = useState<SortField>('date');
     const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+    // Toggle expand/collapse with content-driven height animation
+    const toggleExpand = (el: HTMLElement) => {
+        const COLLAPSED = 72;
+        const isExpanded = el.classList.contains('expanded');
+
+        if (!isExpanded) {
+            // starting from collapsed height
+            el.style.height = `${COLLAPSED}px`;
+            // add expanded class so content becomes visible for measurement
+            el.classList.add('expanded');
+            // measure full height including content
+            const full = el.scrollHeight;
+            // force reflow
+            void el.offsetHeight;
+            // animate to full height
+            el.style.height = `${full}px`;
+            el.setAttribute('aria-expanded', 'true');
+            const onEnd = () => {
+                el.style.height = 'auto';
+                el.removeEventListener('transitionend', onEnd);
+            };
+            el.addEventListener('transitionend', onEnd);
+        } else {
+            // collapse: from current (possibly auto) to fixed collapsed height
+            const current = el.offsetHeight; // explicit pixel height
+            el.style.height = `${current}px`;
+            // force reflow
+            void el.offsetHeight;
+            // remove expanded class (changes visual but height still set)
+            el.classList.remove('expanded');
+            el.setAttribute('aria-expanded', 'false');
+            // animate to collapsed height
+            el.style.height = `${COLLAPSED}px`;
+            const onEnd = () => {
+                // clear inline height so layout can be dynamic
+                el.style.height = '';
+                el.removeEventListener('transitionend', onEnd);
+            };
+            el.addEventListener('transitionend', onEnd);
+        }
+    };
 
     const formatCurrency = (value: number) => {
         return value.toLocaleString('en-US', {
@@ -88,25 +130,25 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
 
     return (
         <div 
-            className="fixed inset-0 bg-background/80 backdrop-blur-md z-50 flex items-center justify-center p-0 sm:p-4"
+            className="fixed inset-0 bg-background-80 backdrop-blur-md z-50 flex items-center justify-center p-0 sm:p-4"
             onClick={onClose}
             role="dialog"
             aria-modal="true"
         >
             <div 
-                className="bg-surface-container-high w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-[40px] flex flex-col shadow-2xl animate-fade-in-up border border-outline-variant/10 overflow-hidden"
+                className="bg-surface-container-high w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-[40px] flex flex-col shadow-2xl animate-fade-in-up border border-outline-variant-10 overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <header className="p-8 pb-4 shrink-0 bg-surface-container-high/50 backdrop-blur-xl border-b border-outline-variant/10">
+                <header className="p-8 pb-4 shrink-0 bg-surface-container-high-50 backdrop-blur-xl border-b border-outline-variant-10">
                     <div className="flex items-center justify-between mb-8">
                         <div>
                             <h2 className="text-3xl font-light text-on-surface tracking-tight">Trip Ledger</h2>
-                            <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant/50 mt-1">Audit your performance</p>
+                            <p className="text-xs font-bold uppercase tracking-widest text-on-surface-50 mt-1">Audit your performance</p>
                         </div>
                         <button 
                             onClick={onClose} 
-                            className="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container-highest/50 hover:bg-surface-container-highest text-on-surface-variant transition-all active:scale-90"
+                            className="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container-highest-50 hover:bg-surface-container-highest text-on-surface-70 transition-all active:scale-90"
                         >
                             <MaterialIcon icon="close" ariaLabel="Close history" className="text-[18px]" />
                         </button>
@@ -116,8 +158,8 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                         <div className="space-y-6">
                             {/* Summary Dashboard Inside Modal */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-primary-10 rounded-3xl p-4 border border-primary/10">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70 flex items-center gap-1.5 mb-1">
+                                <div className="bg-primary-10 rounded-3xl p-4 border border-primary-10">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary-70 flex items-center gap-1.5 mb-1">
                                         <MaterialIcon icon="attach_money" ariaLabel="Aggregate net" className="text-[14px] mr-1" /> Aggregate Net
                                     </span>
                                     <span className={`text-2xl font-medium ${stats.net >= 0 ? 'text-primary' : 'text-error'}`}>
@@ -125,7 +167,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                                     </span>
                                 </div>
                                 <div className="bg-surface-container-highest-40 rounded-3xl p-4 border border-outline-variant-10">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70 flex items-center gap-1.5 mb-1">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-70 flex items-center gap-1.5 mb-1">
                                         <MaterialIcon icon="location_on" ariaLabel="Total mileage" className="text-[14px] mr-1" /> Total Mileage
                                     </span>
                                     <span className="text-2xl font-medium text-on-surface">
@@ -135,7 +177,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                             </div>
 
                             <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
-                                <span className="text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest mr-1">Sort:</span>
+                                <span className="text-[10px] font-bold text-on-surface-40 uppercase tracking-widest mr-1">Sort:</span>
                                 <SortBadge field="date" label="Date" isActive={sortField === 'date'} sortOrder={sortOrder} onToggle={handleSortToggle} />
                                 <SortBadge field="earnings" label="Profit" isActive={sortField === 'earnings'} sortOrder={sortOrder} onToggle={handleSortToggle} />
                                 <SortBadge field="distance" label="Miles" isActive={sortField === 'distance'} sortOrder={sortOrder} onToggle={handleSortToggle} />
@@ -149,13 +191,26 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                     {sortedHistory.length > 0 ? (
                         <div className="grid gap-3">
                             {sortedHistory.map((trip) => (
-                                <div key={trip.id} className="group relative bg-surface-container-highest-30 rounded-[24px] p-5 flex flex-col border border-outline-variant-10 hover:border-primary/30 hover:bg-surface-container-highest-60 transition-all duration-300">
+                                <div
+                                    key={trip.id}
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-expanded={false}
+                                    className={`transaction-item bg-surface-container-highest-30 rounded-[24px] p-5 flex flex-col border border-outline-variant-10 hover:border-primary-30 hover:bg-surface-container-highest-60 transition-all duration-300`}
+                                    onClick={(e) => toggleExpand(e.currentTarget as HTMLElement)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            toggleExpand(e.currentTarget as HTMLElement);
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                >
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-60">
                                                 {new Date(trip.timestamp).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                                             </span>
-                                            <span className="text-xs text-on-surface-variant/40 font-medium">
+                                            <span className="text-xs text-on-surface-40 font-medium">
                                                 {new Date(trip.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         </div>
@@ -163,46 +218,55 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, his
                                             <div className={`text-2xl font-medium tracking-tight ${trip.results.netEarnings >= 0 ? 'text-primary' : 'text-error'}`}>
                                                 {formatCurrency(trip.results.netEarnings)}
                                             </div>
-                                            <div className="text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-tighter">Net Earnings</div>
+                                            <div className="text-[10px] font-bold text-on-surface-40 uppercase tracking-tighter">Net Earnings</div>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-2 pt-3 border-t border-outline-variant/5">
+                                    <div className="grid grid-cols-3 gap-2 pt-3 border-t border-outline-variant-5">
+                                         <div className="flex flex-col">
+                                            <span className="text-[9px] font-bold text-on-surface-40 uppercase tracking-widest">Payout</span>
+                                            <span className="text-xs font-medium text-on-surface-40">{formatCurrency(parseFloat(trip.inputs.payment))}</span>
+                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[9px] font-bold text-on-surface-variant/40 uppercase tracking-widest">Payout</span>
-                                            <span className="text-xs font-medium text-on-surface-variant">{formatCurrency(parseFloat(trip.inputs.payment))}</span>
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-[9px] font-bold text-on-surface-variant/40 uppercase tracking-widest">Gas Cost</span>
-                                            <span className="text-xs font-medium text-error/70">{formatCurrency(trip.results.totalGasCost)}</span>
+                                            <span className="text-[9px] font-bold text-on-surface-40 uppercase tracking-widest">Gas Cost</span>
+                                            <span className="text-xs font-medium text-error-70">{formatCurrency(trip.results.totalGasCost)}</span>
                                         </div>
                                         <div className="flex flex-col text-right">
-                                            <span className="text-[9px] font-bold text-on-surface-variant/40 uppercase tracking-widest">Efficiency</span>
-                                            <span className="text-xs font-medium text-primary/80">{trip.results.earningsPerMile.toFixed(2)}/mi</span>
+                                            <span className="text-[9px] font-bold text-on-surface-40 uppercase tracking-widest">Efficiency</span>
+                                            <span className="text-xs font-medium text-primary-80">{trip.results.earningsPerMile.toFixed(2)}/mi</span>
                                         </div>
                                     </div>
                                     
                                     <div className="mt-3 flex items-center gap-2">
-                                        <div className="h-1 flex-grow bg-outline-variant/10 rounded-full overflow-hidden">
-                                            <div 
+                                        <div className="h-1 flex-grow bg-outline-variant-10 rounded-full overflow-hidden">
+                                            <div
                                                 className="h-full bg-primary-40"
                                                 style={{ width: `${Math.min(100, (trip.results.netEarnings / (parseFloat(trip.inputs.payment) || 1)) * 100)}%` }}
                                             />
                                         </div>
-                                        <span className="text-[9px] font-bold text-on-surface-variant/30 uppercase tracking-widest">
+                                        <span className="text-[9px] font-bold text-on-surface-30 uppercase tracking-widest">
                                             {Math.round((trip.results.netEarnings / (parseFloat(trip.inputs.payment) || 1)) * 100)}% ROI
                                         </span>
+                                    </div>
+
+                                    <div className="expanded-content mt-4">
+                                        {/* Expanded details */}
+                                        <div className="text-sm text-on-surface-60">
+                                            <div>{`Gas Price: ${trip.inputs.gasPrice}`}</div>
+                                            <div>{`MPG: ${trip.inputs.mpg}`}</div>
+                                            <div className="mt-2">{`Saved at: ${new Date(trip.timestamp).toLocaleString()}`}</div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-20 text-on-surface-variant text-center">
+                        <div className="flex flex-col items-center justify-center py-20 text-on-surface-60 text-center">
                             <div className="w-20 h-20 bg-surface-container-highest rounded-full flex items-center justify-center mb-6 opacity-40">
                                 <MaterialIcon icon="history" ariaLabel="History" className="text-[28px]" />
                             </div>
                             <h3 className="text-xl font-medium text-on-surface mb-2">No Records Found</h3>
-                            <p className="text-sm text-on-surface-variant/60 max-w-xs">Start recording your delivery trips to see your earnings performance history here.</p>
+                            <p className="text-sm text-on-surface-60 max-w-xs">Start recording your delivery trips to see your earnings performance history here.</p>
                         </div>
                     )}
                 </main>

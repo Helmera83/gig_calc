@@ -6,7 +6,9 @@ import { type CalculationResults, type TripRecord } from './types';
 import { MaterialIcon } from './components/MaterialIcon';
 import { ThemeSwitcher } from './components/ThemeSwitcher';
 import Snackbar from './components/Snackbar';
+import { RippleProvider } from './components/RippleProvider';
 import { HistoryModal } from './components/HistoryModal';
+import './index.css';
 
 
 const getDistanceFromLatLonInMiles = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -194,7 +196,8 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background text-on-surface font-sans p-4 md:p-8 flex justify-center">
+        <div className="min-h-screen bg-background text-on-surface font-sans p-4 md:p-8 flex justify-center items-center">
+            <RippleProvider />
             <div className="w-full max-w-xl space-y-6 pb-16">
 
                 <header className="flex justify-between items-center">
@@ -268,8 +271,8 @@ const App: React.FC = () => {
                 )}
 
                 {/* Financials and Distance Card */}
-                <div className="bg-surface-container rounded-[32px] p-8 border border-outline-variant-20 shadow-sm space-y-8">
-                    <h2 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant/70">Trip Economics</h2>
+                <div className="bg-surface-container rounded-m3-xl p-8 border border-outline/5 space-y-8">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant/40">Trip Economics</h2>
 
                     <div className="grid gap-6">
                         <InputField id="payment" label="Offer Amount" value={payment} onChange={(e) => setPayment(e.target.value)} placeholder="0.00" unit="USD" icon={<MaterialIcon icon="attach_money" ariaLabel="Payment amount" className="text-[18px]" />} />
@@ -278,7 +281,7 @@ const App: React.FC = () => {
                             <div className="flex-grow">
                                 <InputField id="distance" label="Trip Distance" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="0.0" unit="MI" icon={<MaterialIcon icon="straighten" ariaLabel="Distance in miles" className="text-[18px]" />} />
                             </div>
-                            <button onClick={toggleTracking} className={`w-20 h-14 mt-6 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 ${isTracking ? 'bg-error-10 border-error-20 text-error shadow-inner' : 'bg-surface-container-highest-40 border-outline-variant-20 text-on-surface-variant hover:border-primary/50 hover:text-primary'}`}>
+                            <button onClick={toggleTracking} className={`w-20 h-14 mt-6 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 ${isTracking ? 'bg-error-10 border-error-20 text-on-surface-variant shadow-inner' : 'bg-surface-container-highest-30 border-outline-variant-20 text-on-surface-variant hover:border-primary/30 hover:text-on-surface-variant'}`}>
                                 {isTracking ? <MaterialIcon icon="stop" ariaLabel="Stop tracking" className="text-[18px]" /> : <MaterialIcon icon="play_arrow" ariaLabel="Start tracking" className="text-[18px]" />}
                                 <span className="text-[9px] font-bold uppercase">{isTracking ? 'STOP' : 'LIVE'}</span>
                             </button>
@@ -328,8 +331,8 @@ const App: React.FC = () => {
                         ) : aiAnalysis ? (
                             <div className="animate-fade-in">
                                 <p className={`text-xl font-medium tracking-tight mb-2 ${
-                                    aiAnalysis.verdict.toLowerCase().includes('excellent') || aiAnalysis.verdict.toLowerCase().includes('high') ? 'text-green-300' :
-                                        aiAnalysis.verdict.toLowerCase().includes('low') || aiAnalysis.verdict.toLowerCase().includes('marginal') ? 'text-yellow-200' :
+                                    aiAnalysis.verdict.toLowerCase().includes('excellent') || aiAnalysis.verdict.toLowerCase().includes('high') ? 'text-success' :
+                                        aiAnalysis.verdict.toLowerCase().includes('low') || aiAnalysis.verdict.toLowerCase().includes('marginal') ? 'text-warning' :
                                             aiAnalysis.verdict.toLowerCase().includes('lose') || aiAnalysis.verdict.toLowerCase().includes('bad') ? 'text-error' : 'text-on-surface'
                                 }`}>
                                     {aiAnalysis.verdict}
