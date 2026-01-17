@@ -16,24 +16,15 @@ interface InputFieldProps {
 
 export const InputField: React.FC<InputFieldProps> = ({ id, label, value, onChange, placeholder, unit, icon, inputRef, type = 'number', min = '0', step = '0.01' }) => {
   return (
-    <div className="group relative flex flex-col gap-1.5">
-      <label 
+    <div className="input-field-group">
+      <label
           htmlFor={id} 
-          className="text-[11px] font-bold uppercase tracking-wider text-on-surface-60 ml-1"
+          className="input-field-label"
       >
           {label}
       </label>
-      <div className="
-  flex items-center
-  bg-surface-container-highest-30
-  rounded-2xl
-  border border-outline-variant-20
-  group-focus-within:border-primary
-  group-focus-within:bg-surface-container-highest
-  transition-all duration-300
-  h-14 px-4
-">
-        <div className="text-on-surface-70 mr-3 group-focus-within:text-primary transition-colors">
+      <div className="input-field-container">
+        <div className="input-field-icon">
             {icon}
         </div>
         
@@ -45,13 +36,13 @@ export const InputField: React.FC<InputFieldProps> = ({ id, label, value, onChan
             onChange={onChange}
             placeholder={placeholder}
             ref={inputRef}
-            className="flex-grow bg-transparent text-on-surface placeholder-on-surface-30 focus:outline-none text-base h-full"
+            className="input-field-input"
             min={min}
             step={step}
         />
         
-        <div className="ml-2 pl-3 border-l border-outline-variant-20">
-          <span className="text-xs text-on-surface-70 font-medium">{unit}</span>
+        <div className="input-field-unit">
+          <span className="input-field-unit-text">{unit}</span>
         </div>
       </div>
     </div>

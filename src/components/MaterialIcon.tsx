@@ -7,7 +7,7 @@ interface MaterialIconProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export const MaterialIcon: React.FC<MaterialIconProps> = ({ icon, className = '', ariaLabel, ...rest }) => {
-  const baseClass = `material-icons align-middle select-none ${className}`;
+  const baseClass = `material-icons ${className}`;
   return (
     <span
       className={baseClass}

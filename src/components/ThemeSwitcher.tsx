@@ -42,9 +42,9 @@ export const ThemeSwitcher: React.FC = () => {
       onClick={cycle}
       aria-label={ariaLabel}
       title={title}
-      className="ml-3 w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-highest-30 hover:bg-surface-container-highest-40 transition-colors"
+      className="theme-switcher"
     >
-      <MaterialIcon icon={icon} ariaLabel={`Theme: ${theme}`} className="text-[18px] text-on-surface-variant" />
+      <MaterialIcon icon={icon} ariaLabel={`Theme: ${theme}`} />
     </button>
   );
 };
