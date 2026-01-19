@@ -3,7 +3,6 @@ interface ResultCardProps {
   title: string;
   value: string;
   isPositive: boolean;
-  description: string;
   large?: boolean;
   variant?: 'default' | 'neutral';
 }
@@ -12,36 +11,28 @@ export const ResultCard: React.FC<ResultCardProps> = ({
   title,
   value,
   isPositive,
-  description,
   large = false,
   variant = 'default',
 }) => {
   // Use semantic M3 tokens: success for positive, error for negative
-  let valueColorClass = 'neutral';
+  let valueColorClass = 'result-card-value neutral';
 
   if (variant !== 'neutral') {
-    valueColorClass = isPositive ? 'positive' : 'negative';
+    valueColorClass = isPositive ? 'result-card-value positive' : 'result-card-value negative';
   }
 
-  const containerVariant = large ? 'variant-high' : 'variant-default';
-  const sizeVariant = large ? 'variant-large' : 'variant-regular';
-  const valueSizeClass = large ? 'large' : 'regular';
+  const containerClass = large ? 'result-card variant-large' : 'result-card variant-regular';
 
   return (
-    <div className={`result-card ${containerVariant} ${sizeVariant}`}>
+    <div className={containerClass}>
       <div className="result-card-content">
         <h3 className="result-card-title">{title}</h3>
         <div className="animate-spring-up">
-          <p className={`result-card-value ${valueSizeClass} ${valueColorClass}`}>
+          <p className={`${valueColorClass} ${large ? 'large' : 'regular'}`}>
             {value}
           </p>
         </div>
       </div>
-
-      <p className="result-card-description">
-        {description}
-      </p>
     </div>
   );
 };
-

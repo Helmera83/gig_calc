@@ -4,10 +4,10 @@ import { InputField } from './components/InputField';
 import { ResultCard } from './components/ResultCard';
 import { type CalculationResults, type TripRecord } from './types';
 import { MaterialIcon } from './components/MaterialIcon';
-import { ThemeSwitcher } from './components/ThemeSwitcher';
 import Snackbar from './components/Snackbar';
 import { RippleProvider } from './components/RippleProvider';
 import { HistoryModal } from './components/HistoryModal';
+import { SettingsModal } from './components/SettingsModal';
 import './index.css';
 
 
@@ -45,9 +45,25 @@ const App: React.FC = () => {
     const [aiAnalysis, setAiAnalysis] = useState<{ verdict: string; reasoning: string } | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+    // Settings State
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>(() => {
+        const stored = localStorage.getItem('gigCalcTheme') as 'light' | 'dark' | 'auto' | null;
+        return stored || 'auto';
+    });
+    const [contrast, setContrast] = useState<'medium' | 'high'>(() => {
+        const stored = localStorage.getItem('gigCalcContrast');
+        return (stored as never) || 'medium';
+    });
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement | null>(null);
+
     const watchId = useRef<number | null>(null);
     const lastPosition = useRef<{ lat: number; lon: number } | null>(null);
     const paymentRef = useRef<HTMLInputElement | null>(null);
+    const [primaryColor, setPrimaryColor] = useState<string>(() => {
+        return localStorage.getItem('gigCalcPrimaryColor') || '#8B52E2';
+    });
 
 
     useEffect(() => {
@@ -80,6 +96,146 @@ const App: React.FC = () => {
         // Reset AI analysis when data changes
         setAiAnalysis(null);
     }, [payment, distance, gasPrice, mpg]);
+
+    useEffect(() => {
+        const mq = window.matchMedia('(prefers-color-scheme: light)');
+        const applyClass = (isLight: boolean) => {
+            document.body.classList.remove('theme-light');
+            if (theme === 'light' || (theme === 'auto' && isLight)) {
+                document.body.classList.add('theme-light');
+            }
+            // Reapply primary color to update surface tints for new theme
+            applyPrimaryColor(primaryColor);
+        };
+        applyClass(mq.matches);
+        if (theme === 'auto') {
+            const listener = (e: MediaQueryListEvent) => applyClass(e.matches);
+            mq.addEventListener('change', listener);
+            return () => mq.removeEventListener('change', listener);
+        }
+    }, [theme, primaryColor]);
+
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsMenuOpen(false); };
+        const onClick = (e: MouseEvent) => {
+            if (isMenuOpen && menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setIsMenuOpen(false);
+            }
+        };
+        document.addEventListener('keydown', onKey);
+        document.addEventListener('mousedown', onClick);
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.removeEventListener('mousedown', onClick);
+        };
+    }, [isMenuOpen]);
+
+    const setThemeAndPersist = (t: 'light' | 'dark' | 'auto') => {
+        setTheme(t);
+        localStorage.setItem('gigCalcTheme', t);
+    };
+
+    const applyPrimaryColor = (hex: string) => {
+        const targets = [document.documentElement, document.body];
+
+        // Calculate relative luminance for contrast determination
+        const getLuminance = (h: string) => {
+            const num = parseInt(h.replace('#',''), 16);
+            const r = ((num >> 16) & 0xFF) / 255;
+            const g = ((num >> 8) & 0xFF) / 255;
+            const b = (num & 0xFF) / 255;
+            const [rs, gs, bs] = [r, g, b].map(c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+            return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+        };
+
+        // Get contrasting text color based on background luminance
+        const getContrastColor = (bgHex: string) => getLuminance(bgHex) > 0.5 ? '#000000' : '#FFFFFF';
+
+        const adjust = (h: string, amt: number) => {
+            const num = parseInt(h.replace('#',''), 16);
+            const r = Math.min(255, Math.max(0, (num >> 16) + amt));
+            const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
+            const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+            return `#${(b | (g << 8) | (r << 16)).toString(16).padStart(6,'0')}`;
+        };
+
+        // Blend primary color with base surface color for tinted surfaces
+        const blendWithSurface = (primaryHex: string, baseHex: string, tintAmount: number) => {
+            const pNum = parseInt(primaryHex.replace('#',''), 16);
+            const bNum = parseInt(baseHex.replace('#',''), 16);
+            const pr = (pNum >> 16) & 0xFF;
+            const pg = (pNum >> 8) & 0xFF;
+            const pb = pNum & 0xFF;
+            const br = (bNum >> 16) & 0xFF;
+            const bg = (bNum >> 8) & 0xFF;
+            const bb = bNum & 0xFF;
+            const r = Math.round(br + (pr - br) * tintAmount);
+            const g = Math.round(bg + (pg - bg) * tintAmount);
+            const b = Math.round(bb + (pb - bb) * tintAmount);
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+        };
+
+        // Check if we're in light mode
+        const isLightMode = document.body.classList.contains('theme-light');
+
+        // Base surface colors
+        const baseSurface = isLightMode ? '#FFFFFF' : '#18191F';
+        const baseBackground = isLightMode ? '#F7F5FF' : '#121214';
+
+        const primaryContainer = adjust(hex, 20);
+        const secondary = adjust(hex, -15);
+        const secondaryContainer = adjust(hex, 5);
+        const tertiary = adjust(hex, 30);
+        const tertiaryContainer = adjust(hex, 45);
+
+        // Create tinted surface containers
+        const surfaceContainerLowest = blendWithSurface(hex, baseSurface, isLightMode ? 0.02 : 0.01);
+        const surfaceContainerLow = blendWithSurface(hex, baseSurface, isLightMode ? 0.04 : 0.02);
+        const surfaceContainer = blendWithSurface(hex, baseSurface, isLightMode ? 0.08 : 0.04);
+        const surfaceContainerHigh = blendWithSurface(hex, baseSurface, isLightMode ? 0.12 : 0.06);
+        const surfaceContainerHighest = blendWithSurface(hex, baseSurface, isLightMode ? 0.16 : 0.08);
+
+        targets.forEach((el) => {
+            el.style.setProperty('--md-sys-color-primary', hex);
+            el.style.setProperty('--md-sys-color-primary-container', primaryContainer);
+            el.style.setProperty('--md-sys-color-on-primary', getContrastColor(hex));
+            el.style.setProperty('--md-sys-color-on-primary-container', getContrastColor(primaryContainer));
+            el.style.setProperty('--md-sys-color-secondary', secondary);
+            el.style.setProperty('--md-sys-color-secondary-container', secondaryContainer);
+            el.style.setProperty('--md-sys-color-on-secondary', getContrastColor(secondary));
+            el.style.setProperty('--md-sys-color-on-secondary-container', getContrastColor(secondaryContainer));
+            el.style.setProperty('--md-sys-color-tertiary', tertiary);
+            el.style.setProperty('--md-sys-color-tertiary-container', tertiaryContainer);
+            el.style.setProperty('--md-sys-color-on-tertiary', getContrastColor(tertiary));
+            el.style.setProperty('--md-sys-color-on-tertiary-container', getContrastColor(tertiaryContainer));
+
+            // Apply tinted surface colors
+            el.style.setProperty('--md-sys-color-surface', blendWithSurface(hex, baseSurface, isLightMode ? 0.01 : 0.005));
+            el.style.setProperty('--md-sys-color-surface-container-lowest', surfaceContainerLowest);
+            el.style.setProperty('--md-sys-color-surface-container-low', surfaceContainerLow);
+            el.style.setProperty('--md-sys-color-surface-container', surfaceContainer);
+            el.style.setProperty('--md-sys-color-surface-container-high', surfaceContainerHigh);
+            el.style.setProperty('--md-sys-color-surface-container-highest', surfaceContainerHighest);
+            el.style.setProperty('--md-sys-color-background', blendWithSurface(hex, baseBackground, isLightMode ? 0.02 : 0.01));
+        });
+    };
+
+    useEffect(() => {
+        applyPrimaryColor(primaryColor);
+    }, [primaryColor]);
+
+    const handleSettingsSave = (next: { gasPrice: string; mpg: string; theme: 'light' | 'dark' | 'auto'; contrast: 'medium' | 'high'; primaryColor: string; }) => {
+        setGasPrice(next.gasPrice);
+        setMpg(next.mpg);
+        setTheme(next.theme);
+        setContrast(next.contrast);
+        setPrimaryColor(next.primaryColor);
+        localStorage.setItem('gigCalcGasPrice', next.gasPrice);
+        localStorage.setItem('gigCalcMpg', next.mpg);
+        localStorage.setItem('gigCalcTheme', next.theme);
+        localStorage.setItem('gigCalcContrast', next.contrast);
+        localStorage.setItem('gigCalcPrimaryColor', next.primaryColor);
+    };
 
     const toggleTracking = () => {
         if (isTracking) {
@@ -116,7 +272,7 @@ const App: React.FC = () => {
         if (!payment || !distance) return;
         setIsAnalyzing(true);
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
             const prompt = `Analyze this delivery gig profitability:
       Offer: $${payment}
       Distance: ${distance} miles
@@ -196,18 +352,15 @@ const App: React.FC = () => {
     };
 
     return (
-
         <div className="app-container">
             <RippleProvider />
             <div className="app-content">
-
                 <header className="app-header">
                     <div className="app-title-container">
                         <h1 className="app-title">ProTrip</h1>
                         <p className="app-subtitle">Net Profit Analyzer</p>
                     </div>
                     <div className="header-actions">
-                      <ThemeSwitcher />
                       <button
                          onClick={() => setIsHistoryOpen(true)}
                          aria-label="Open history"
@@ -216,58 +369,76 @@ const App: React.FC = () => {
                          <MaterialIcon icon="history" ariaLabel="History" />
                          {history.length > 0 && <span className="badge"></span>}
                       </button>
+
+                      {/* Menu Toggle */}
+                      <div className="menu-wrapper" ref={menuRef}>
+                        <button
+                          className="icon-button"
+                          aria-haspopup="menu"
+                          aria-expanded={isMenuOpen}
+                          aria-label="Open menu"
+                          onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        >
+                          <span className="material-icons">more_vert</span>
+                        </button>
+                        {isMenuOpen && (
+                          <div className="menu-dropdown" role="menu">
+                            <button className="menu-item" role="menuitem" onClick={() => { setIsSettingsOpen(true); setIsMenuOpen(false); }}>
+                              <span className="material-icons" aria-hidden>settings</span>
+                              <span>Settings</span>
+                            </button>
+                            <button className="menu-item" role="menuitem" onClick={() => { setIsHistoryOpen(true); setIsMenuOpen(false); }}>
+                              <span className="material-icons" aria-hidden>history</span>
+                              <span>History</span>
+                            </button>
+                            <div className="menu-separator" aria-hidden></div>
+                            <button className="menu-item" role="menuitem" onClick={() => { setThemeAndPersist('auto'); setIsMenuOpen(false); }}>
+                              <span className="material-icons" aria-hidden>brightness_auto</span>
+                              <span>Auto Theme</span>
+                            </button>
+                            <button className="menu-item" role="menuitem" onClick={() => { setThemeAndPersist('light'); setIsMenuOpen(false); }}>
+                              <span className="material-icons" aria-hidden>light_mode</span>
+                              <span>Light Theme</span>
+                            </button>
+                            <button className="menu-item" role="menuitem" onClick={() => { setThemeAndPersist('dark'); setIsMenuOpen(false); }}>
+                              <span className="material-icons" aria-hidden>dark_mode</span>
+                              <span>Dark Theme</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                 </header>
 
 
-                {gpsError && (
-                    <div className="error-alert">
-                        <span className="error-alert-icon">⚠️</span> {gpsError}
-                    </div>
-                )}
-
-                {/* Offer Amount Card */}
+                {/* Trip Details Card */}
                 <div className="input-card">
-                    <h2 className="input-card-title">Offer Amount</h2>
+                    <h2 className="input-card-title">Trip Details</h2>
                     <div className="input-grid">
-                        <InputField id="payment" label="Payment" value={payment} onChange={(e) => setPayment(e.target.value)} placeholder="0.00" unit="USD" icon={<MaterialIcon icon="attach_money" ariaLabel="Payment amount" />} />
-                    </div>
-                </div>
-
-                {/* Trip Distance and GPS Card */}
-                <div className="input-card">
-                    <h2 className="input-card-title">Trip Distance</h2>
-                    <div className="input-grid">
-                        <div className="input-row">
-                            <div className="input-row-item">
-                                <InputField id="distance" label="Distance" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="0.0" unit="MI" icon={<MaterialIcon icon="straighten" ariaLabel="Distance in miles" />} />
+                        <div className="input-section">
+                            <div className="input-row-3">
+                                <InputField id="payment" label="Payment" value={payment} onChange={(e) => setPayment(e.target.value)} placeholder="0.00" unit="USD" icon={<MaterialIcon icon="attach_money" ariaLabel="Payment amount" />} />
+                                <div className="input-field-group">
+                                    <InputField id="distance" label="Distance" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="0.0" unit="MI" icon={<MaterialIcon icon="straighten" ariaLabel="Distance in miles" />} />
+                                    <button
+                                        onClick={toggleTracking}
+                                        className={`track-mileage-button ${isTracking ? 'active' : ''}`}
+                                        aria-label={isTracking ? 'Stop tracking mileage' : 'Start tracking mileage'}
+                                    >
+                                        <MaterialIcon icon={isTracking ? 'stop' : 'my_location'} ariaLabel={isTracking ? 'Stop' : 'Track'} />
+                                        <span>{isTracking ? 'Stop Tracking' : 'Track Mileage'}</span>
+                                    </button>
+                                    {gpsError && (
+                                        <div className="error-alert">
+                                            <span className="error-alert-icon">⚠️</span> {gpsError}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                            <button onClick={toggleTracking} className={`gps-button ${isTracking ? 'active' : ''}`}>
-                                {isTracking ? <MaterialIcon icon="stop" ariaLabel="Stop tracking" /> : <MaterialIcon icon="play_arrow" ariaLabel="Start tracking" />}
-                                <span className="gps-button-label">{isTracking ? 'STOP' : 'LIVE'}</span>
-                            </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Fuel Settings Card */}
-                <div className="input-card">
-                    <h2 className="input-card-title">Fuel Settings</h2>
-                    <div className="input-grid">
-                        <InputField id="gasPrice" label="Gas Price" value={gasPrice} onChange={(e) => setGasPrice(e.target.value)} placeholder="3.50" unit="GAL" icon={<MaterialIcon icon="local_gas_station" ariaLabel="Gas price" />} />
-
-                        <InputField id="mpg" label="Efficiency" value={mpg} onChange={(e) => setMpg(e.target.value)} placeholder="25" unit="MPG" icon={<MaterialIcon icon="speed" ariaLabel="Vehicle MPG" />} />
-                    </div>
-                </div>
-
-                {/* Results Section */}
-                <div className="results-grid">
-                    <div className="results-grid-full">
-                        <ResultCard title="Net Profit" value={`$${results.netEarnings.toFixed(2)}`} isPositive={results.netEarnings >= 0} description="After fuel estimated costs" large />
-                    </div>
-                    <ResultCard title="Fuel Cost" value={`$${results.totalGasCost.toFixed(2)}`} isPositive={false} description="Estimated expense" variant="neutral" />
-                    <ResultCard title="ROI / Mile" value={`$${results.earningsPerMile.toFixed(2)}`} isPositive={results.earningsPerMile > 0} description="Efficiency metric" />
-                </div>
 
                 {/* AI Analysis Section */}
                 <div className="ai-card-wrapper">
@@ -275,18 +446,8 @@ const App: React.FC = () => {
                     <div className="ai-card">
                         <div className="ai-card-header">
                             <div className="ai-card-title-wrapper">
-                                <MaterialIcon icon="sparkles" ariaLabel="Sparkles" />
-                                <h2 className="ai-card-title">AI Profitability Verdict</h2>
+                                <h2 className="ai-card-title">Analysis</h2>
                             </div>
-                            {!aiAnalysis && !isAnalyzing && (
-                                <button
-                                    onClick={analyzeProfitability}
-                                    disabled={!payment || !distance}
-                                    className="ai-analyze-button"
-                                >
-                                    Analyze
-                                </button>
-                            )}
                         </div>
 
                         {isAnalyzing ? (
@@ -312,8 +473,35 @@ const App: React.FC = () => {
                                 Input trip details to generate an AI efficiency report.
                             </p>
                         )}
+
+                        {!aiAnalysis && !isAnalyzing && (
+                            <button
+                                onClick={analyzeProfitability}
+                                disabled={!payment || !distance}
+                                className="ai-analyze-button-bottom"
+                            >
+                                <MaterialIcon icon="auto_awesome" ariaLabel="Analyze" />
+                                <span>Analyze Trip</span>
+                            </button>
+                        )}
                     </div>
                 </div>
+
+                <div className="action-buttons">
+                    <button onClick={handleSaveTrip} disabled={!payment || !distance} className="action-button primary">
+                        Save Trip Record
+                    </button>
+                    <button onClick={exportTripData} disabled={history.length === 0} className="action-button secondary">
+                        Export Trip Data
+                    </button>
+                </div>
+
+                <div className="results-grid">
+                    <ResultCard title="Net Profit" value={`$${results.netEarnings.toFixed(2)}`} isPositive={results.netEarnings >= 0} large />
+                    <ResultCard title="Fuel Cost" value={`$${results.totalGasCost.toFixed(2)}`} isPositive={false} large />
+                </div>
+
+
 
                 {/* Recent Activity Feed */}
                 <section className="activity-section">
@@ -360,21 +548,22 @@ const App: React.FC = () => {
                     </div>
                 </section>
 
-                <div className="action-buttons">
-                    <button onClick={handleSaveTrip} disabled={!payment || !distance} className="action-button primary">
-                        Save Trip Record
-                    </button>
-                    <button onClick={exportTripData} disabled={history.length === 0} className="action-button secondary">
-                        Export Trip Data
-                    </button>
-                </div>
+
 
                 <Snackbar message={snack} onClose={() => setSnack(null)} />
 
                 <HistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} history={history} onClear={() => { if (window.confirm('Clear history?')) setHistory([]); }} onExport={exportTripData} />
-
+                <SettingsModal
+                    isOpen={isSettingsOpen}
+                    onClose={() => setIsSettingsOpen(false)}
+                    gasPrice={gasPrice}
+                    mpg={mpg}
+                    theme={theme}
+                    contrast={contrast}
+                    primaryColor={primaryColor}
+                    onSave={handleSettingsSave}
+                />
             </div>
-
         </div>
     );
 };
